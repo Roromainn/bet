@@ -1,0 +1,17 @@
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\bin\Debug\net8.0\BetTracker.Data.deps.json
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\bin\Debug\net8.0\BetTracker.Data.runtimeconfig.json
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\bin\Debug\net8.0\BetTracker.Data.dll
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\bin\Debug\net8.0\BetTracker.Data.pdb
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\bin\Debug\net8.0\BetTracker.Core.dll
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\bin\Debug\net8.0\BetTracker.Core.pdb
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\BetTracker.Data.csproj.AssemblyReference.cache
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\BetTracker.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\BetTracker.Data.AssemblyInfoInputs.cache
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\BetTracker.Data.AssemblyInfo.cs
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\BetTracker.Data.csproj.CoreCompileInputs.cache
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\BetTrack.3417390C.Up2Date
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\BetTracker.Data.dll
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\refint\BetTracker.Data.dll
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\BetTracker.Data.pdb
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\BetTracker.Data.genruntimeconfig.cache
+C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.Data\obj\Debug\net8.0\ref\BetTracker.Data.dll

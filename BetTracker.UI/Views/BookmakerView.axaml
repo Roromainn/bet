@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BetTracker.UI.Views.BookmakerView">
+    <Border Padding="12">
+        <Grid RowDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8" RowSpacing="12">
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Manage Bookmakers" FontSize="18" FontWeight="Bold" />
+
+        <!-- Add New Bookmaker Section -->
+        <Border Grid.Row="1"
+                Background="#F5F5F5"
+                BorderBrush="#DDDDDD"
+                BorderThickness="1"
+                Padding="12"
+                CornerRadius="4">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                <TextBox Grid.Column="0"
+                         Watermark="Bookmaker Name"
+                         Text="{Binding NewBookmakerName}" />
+                <TextBox Grid.Column="1"
+                         Watermark="Logo URL"
+                         Text="{Binding NewBookmakerLogoUrl}"
+                         Width="200" />
+                <Button Grid.Column="2"
+                        Content="Add Bookmaker"
+                        Command="{Binding AddBookmakerCommand}"
+                        IsEnabled="{Binding !IsLoading}"
+                        Padding="12,8" />
+                <Button Grid.Column="3"
+                        Content="Load"
+                        Command="{Binding LoadBookmakersCommand}"
+                        IsEnabled="{Binding !IsLoading}"
+                        Padding="12,8" />
+            </Grid>
+        </Border>
+
+        <!-- Error Message -->
+        <Border Grid.Row="1"
+                Background="#FFE6E6"
+                BorderBrush="#FF9999"
+                BorderThickness="1"
+                Padding="12"
+                CornerRadius="4"
+                IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" Text="{Binding ErrorMessage}" Foreground="#CC0000" />
+                <Button Grid.Column="1"
+                        Content="Dismiss"
+                        Command="{Binding ClearErrorCommand}"
+                        Padding="8,4" />
+            </Grid>
+        </Border>
+
+        <!-- Loading Indicator -->
+        <ProgressBar Grid.Row="2"
+                     IsIndeterminate="True"
+                     IsVisible="{Binding IsLoading}"
+                     Height="4" />
+
+        <!-- Bookmakers ListBox -->
+        <ListBox Grid.Row="2"
+                 ItemsSource="{Binding Bookmakers}"
+                 IsVisible="{Binding !IsLoading}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="#FFFFFF"
+                            BorderBrush="#EEEEEE"
+                            BorderThickness="0,0,0,1"
+                            Padding="12,8">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock Text="{Binding Name}"
+                                           FontWeight="Bold"
+                                           FontSize="14" />
+                                <TextBlock Text="{Binding Status}"
+                                           FontSize="12"
+                                           Foreground="#666666" />
+                                <TextBlock Text="{Binding LogoUrl}"
+                                           FontSize="11"
+                                           Foreground="#999999" />
+                            </StackPanel>
+                            <Button Grid.Column="2"
+                                    Content="Delete"
+                                    Command="{Binding $parent[ListBox].DataContext.DeleteBookmakerCommand}"
+                                    CommandParameter="{Binding Bookmaker.Id}"
+                                    Padding="8,4"
+                                    Background="#FF6666"
+                                    Foreground="White" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3"
+                BorderBrush="#CCCCCC"
+                BorderThickness="0,1,0,0"
+                Padding="0,12,0,0">
+            <TextBlock Text="{Binding Bookmakers.Count, StringFormat='Total Bookmakers: {0}'}"
+                       Foreground="#666666" />
+        </Border>
+        </Grid>
+    </Border>
+</UserControl>

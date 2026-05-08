@@ -1,0 +1,233 @@
+==============================================================================
+PHASE 3: REPOSITORY PATTERN + SERVICE LAYER - IMPLEMENTATION COMPLETE
+==============================================================================
+
+DATES: 2026-05-07
+
+==============================================================================
+EXIGENCES COMPLETES
+==============================================================================
+
+1. [DONE] IRepository<T> interface generic (CRUD standard)
+   - File: BetTracker.Data/Repositories/IRepository.cs
+   - Methods: GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync, DeleteAsync, SaveChangesAsync
+
+2. [DONE] BookmakerRepository : IRepository<Bookmaker>
+   - File: BetTracker.Data/Repositories/BookmakerRepository.cs
+   - File: BetTracker.Data/Repositories/IBookmakerRepository.cs
+   - Specialized methods: GetActiveAsync, GetByNameAsync, GetWithOffersAsync
+
+3. [DONE] BetRepository : IRepository<Offre>
+   - File: BetTracker.Data/Repositories/BetRepository.cs
+   - File: BetTracker.Data/Repositories/IBetRepository.cs
+   - Specialized methods: GetActiveBetsAsync, GetByBookmakerAsync, GetWithCalculsAsync,
+                         GetByTypeAsync, GetCompletedBetsAsync
+
+4. [DONE] IBetCalculationService interface + BetCalculationService implementation
+   - File: BetTracker.Core/Services/IBetCalculationService.cs
+   - File: BetTracker.Core/Services/BetCalculationService.cs
+
+   Methods implemented:
+   a) CalculateLayBetEV(backStake, backOdds, layStake, layOdds)
+      Formula: EV = back_stake * (back_odds - 1) - lay_stake * lay_odds
+
+   b) CalculateMatchedBetProfit(stake1, odds1, stake2, odds2)
+      Calculates guaranteed profit for matched bets
+
+   c) CalculateActualEV(calcul, execution)
+      Computes actual EV based on real execution data
+
+   d) CalculateCoverageLoss(stake1, odds1, stake2, odds2)
+      Calculates hedge/coverage loss
+
+5. [DONE] Service registration in DI container
+   - File: BetTracker.Core/Services/ServiceCollectionExtensions.cs
+   - Method: AddBetTrackerCoreServices()
+   - File: BetTracker.Data/Repositories/RepositoryServiceCollectionExtensions.cs
+   - Method: AddBetTrackerRepositories()
+
+6. [DONE] Proper folder structure
+   - BetTracker.Data/Repositories/
+   - BetTracker.Core/Services/
+
+==============================================================================
+FICHIERS CREES
+==============================================================================
+
+Repository Pattern (BetTracker.Data/Repositories/):
+  - IRepository.cs
+  - Repository.cs (generic implementation)
+  - IBookmakerRepository.cs
+  - BookmakerRepository.cs
+  - IBetRepository.cs
+  - BetRepository.cs
+  - RepositoryServiceCollectionExtensions.cs
+
+Service Layer (BetTracker.Core/Services/):
+  - IBetCalculationService.cs
+  - BetCalculationService.cs
+  - ServiceCollectionExtensions.cs
+
+Tests (BetTracker.Tests/):
+  - Services/BetCalculationServiceTests.cs (7 unit tests)
+  - DIContainerTests.cs (4 DI configuration tests)
+  - UsageExample.cs (6 usage example tests with ViewModel pattern)
+
+Documentation:
+  - PHASE3_IMPLEMENTATION.txt (this file)
+
+==============================================================================
+FICHIERS MODIFIES
+==============================================================================
+
+BetTracker.Core/BetTracker.Core.csproj
+  - Added: Microsoft.Extensions.DependencyInjection.Abstractions (Version 8.*)
+
+BetTracker.Data/BetTracker.Data.csproj
+  - Added: Microsoft.Extensions.DependencyInjection.Abstractions (Version 8.*)
+
+BetTracker.Data/Repositories/BetRepository.cs
+  - Fixed enum name: StatutOffre.Terminee (not Termine)
+
+==============================================================================
+TEST RESULTS
+==============================================================================
+
+Build Status: SUCCESS
+  - BetTracker.Core -> built successfully
+  - BetTracker.Data -> built successfully
+  - BetTracker.Tests -> built successfully
+  - BetTracker.UI -> built successfully
+
+Test Execution: ALL PASSED (18/18)
+
+Test Breakdown:
+  1. BetCalculationServiceTests (7 tests):
+     - CalculateLayBetEV_WithValidInputs_ReturnsCorrectEV
+     - CalculateLayBetEV_WithPositiveEV_ReturnsPositiveValue
+     - CalculateLayBetEV_WithNegativeOdds_ThrowsException
+     - CalculateMatchedBetProfit_WithValidInputs_ReturnsCorrectProfit
+     - CalculateMatchedBetProfit_WithNegativeStake_ThrowsException
+     - CalculateCoverageLoss_WithImbalancedOdds_ReturnsLoss
+     - CalculateCoverageLoss_WithPerfectCoverage_ReturnsZero
+     - CalculateCoverageLoss_WithNegativeOdds_ThrowsException
+
+  2. DIContainerTests (4 tests):
+     - ServiceCollection_WithExtensions_RegistersAllServices
+     - BetCalculationService_CanBeResolved_FromDIContainer
+     - BookmakerRepository_CanBeResolved_FromDIContainer
+     - BetRepository_CanBeResolved_FromDIContainer
+
+  3. UsageExample (6 tests):
+     - Example_SetupDependencyInjectionContainer
+     - Example_CalculateEVForLayBet
+     - Example_FindProfitableLay
+     - Example_CalculateCoverageLoss
+     - Example_RepositoriesScopedLifetime
+     - Example_ViewModel (demonstrates MVVM integration pattern)
+
+==============================================================================
+USAGE EXAMPLES
+==============================================================================
+
+1. SETUP DI CONTAINER IN MAIN APPLICATION:
+
+    var services = new ServiceCollection();
+    services.AddScoped<BetTrackerContext>();
+    services.AddBetTrackerRepositories();
+    services.AddBetTrackerCoreServices();
+    var provider = services.BuildServiceProvider();
+
+2. USING REPOSITORIES:
+
+    var bookmakerRepo = provider.GetRequiredService<IBookmakerRepository>();
+    var activeBookmakers = await bookmakerRepo.GetActiveAsync();
+
+3. USING CALCULATION SERVICE:
+
+    var calcService = provider.GetRequiredService<IBetCalculationService>();
+    var ev = calcService.CalculateLayBetEV(100m, 3.0m, 150m, 1.5m);
+
+4. IN AVALONIA MVVM VIEWMODEL (Constructor Injection):
+
+    public class BetsViewModel
+    {
+        private readonly IBetRepository _betRepository;
+        private readonly IBetCalculationService _calculationService;
+
+        public BetsViewModel(
+            IBetRepository betRepository,
+            IBetCalculationService calculationService)
+        {
+            _betRepository = betRepository;
+            _calculationService = calculationService;
+        }
+
+        public async Task LoadBetsAsync()
+        {
+            var activeBets = await _betRepository.GetActiveBetsAsync();
+            // Process bets...
+        }
+    }
+
+==============================================================================
+DI CONTAINER REGISTRATION REFERENCE
+==============================================================================
+
+Extension Method: ServiceCollectionExtensions.AddBetTrackerCoreServices()
+  - Registers: IBetCalculationService -> BetCalculationService (Scoped)
+
+Extension Method: RepositoryServiceCollectionExtensions.AddBetTrackerRepositories()
+  - Registers: IRepository<T> -> Repository<T> (Scoped, generic)
+  - Registers: IBookmakerRepository -> BookmakerRepository (Scoped)
+  - Registers: IBetRepository -> BetRepository (Scoped)
+
+Lifetime: Scoped
+  - New instance per scope (per request/operation in web apps)
+  - Suitable for DbContext-dependent services
+  - Allows lazy-loading and change tracking
+
+==============================================================================
+CALCULATION FORMULAS IMPLEMENTED
+==============================================================================
+
+1. LAY BET EV (Expected Value):
+   Formula: EV = back_stake * (back_odds - 1) - lay_stake * lay_odds
+
+   Example:
+   - Back 100€ at 3.0 odds on Team A
+   - Lay 150€ at 1.5 odds on Team A (opposite)
+   - EV = 100 * (3.0 - 1) - 150 * 1.5 = 200 - 225 = -25€
+
+2. MATCHED BET PROFIT:
+   Guaranteed profit when both outcomes are covered
+   Formula: Profit = min(stake1 * odds1, stake2 * odds2) - total_stakes
+
+3. COVERAGE LOSS:
+   Amount lost due to imperfect matching
+   Formula: Loss = total_stakes - min(outcome1, outcome2)
+
+==============================================================================
+NEXT PHASES (Phase 4+)
+==============================================================================
+
+Recommended next steps:
+1. Implement Unit of Work pattern (if needed for complex transactions)
+2. Create Business Logic Services (ArbitrageFinder, ProfitCalculator)
+3. Implement API/View Models for UI layer
+4. Add logging and error handling middleware
+5. Database seeding with test data
+6. UI integration in Avalonia (MVVM binding to services)
+
+==============================================================================
+NOTES FOR DEVELOPER
+==============================================================================
+
+- All repositories inherit from generic Repository<T> for common CRUD
+- Specialized repositories extend with domain-specific queries
+- EF Core DbContext is used directly (SQLite provider)
+- Thread-safe: Use scoped lifetime with async/await patterns
+- Error handling: Implement in higher layers (Services/Controllers)
+- Connection string: C:\Users\romai\Desktop\ClaudeAccess\bet\BetTracker.db
+
+==============================================================================

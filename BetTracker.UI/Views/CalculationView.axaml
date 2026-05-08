@@ -1,0 +1,168 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BetTracker.UI.Views.CalculationView">
+    <ScrollViewer Padding="12">
+        <StackPanel Spacing="20">
+            <!-- Title -->
+            <TextBlock Text="Bet Calculations" FontSize="18" FontWeight="Bold" />
+
+            <!-- Error Message -->
+            <Border Background="#FFE6E6"
+                    BorderBrush="#FF9999"
+                    BorderThickness="1"
+                    Padding="12"
+                    CornerRadius="4"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#CC0000" />
+            </Border>
+
+            <!-- LAY BET EV CALCULATION -->
+            <Border Background="#F0F0F0"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    Padding="16"
+                    CornerRadius="4">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="1. Lay Bet EV Calculation"
+                               FontSize="14"
+                               FontWeight="Bold" />
+
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                        <!-- Back Stake -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Back Stake:" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding BackStake}" />
+
+                        <!-- Back Odds -->
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Back Odds:" />
+                        <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding BackOdds}" />
+
+                        <!-- Lay Stake -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Lay Stake:" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LayStake}" />
+
+                        <!-- Lay Odds -->
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Lay Odds:" />
+                        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding LayOdds}" />
+                    </Grid>
+
+                    <Button Content="Calculate Lay EV"
+                            Command="{Binding CalculateLayBetEVCommand}"
+                            Padding="12,8" />
+
+                    <Border Background="#FFFFCC"
+                            BorderBrush="#FFDD00"
+                            BorderThickness="1"
+                            Padding="12"
+                            CornerRadius="4"
+                            IsVisible="{Binding LayBetEV}">
+                        <TextBlock Text="{Binding LayBetEV}"
+                                   FontSize="14"
+                                   FontWeight="Bold" />
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- MATCHED BET PROFIT CALCULATION -->
+            <Border Background="#F0F0F0"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    Padding="16"
+                    CornerRadius="4">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="2. Matched Bet Profit"
+                               FontSize="14"
+                               FontWeight="Bold" />
+
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                        <!-- Stake 1 -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Stake 1:" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Stake1}" />
+
+                        <!-- Odds 1 -->
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Odds 1:" />
+                        <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Odds1}" />
+
+                        <!-- Stake 2 -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Stake 2:" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Stake2}" />
+
+                        <!-- Odds 2 -->
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Odds 2:" />
+                        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Odds2}" />
+                    </Grid>
+
+                    <Button Content="Calculate Matched Profit"
+                            Command="{Binding CalculateMatchedBetProfitCommand}"
+                            Padding="12,8" />
+
+                    <Border Background="#CCFFCC"
+                            BorderBrush="#00DD00"
+                            BorderThickness="1"
+                            Padding="12"
+                            CornerRadius="4"
+                            IsVisible="{Binding MatchedBetProfit}">
+                        <TextBlock Text="{Binding MatchedBetProfit}"
+                                   FontSize="14"
+                                   FontWeight="Bold" />
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- COVERAGE LOSS CALCULATION -->
+            <Border Background="#F0F0F0"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    Padding="16"
+                    CornerRadius="4">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="3. Coverage Loss"
+                               FontSize="14"
+                               FontWeight="Bold" />
+
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                        <!-- Coverage Stake 1 -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Stake 1:" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CoverageStake1}" />
+
+                        <!-- Coverage Odds 1 -->
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Odds 1:" />
+                        <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding CoverageOdds1}" />
+
+                        <!-- Coverage Stake 2 -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Stake 2:" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CoverageStake2}" />
+
+                        <!-- Coverage Odds 2 -->
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Odds 2:" />
+                        <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding CoverageOdds2}" />
+                    </Grid>
+
+                    <Button Content="Calculate Coverage Loss"
+                            Command="{Binding CalculateCoverageLossCommand}"
+                            Padding="12,8" />
+
+                    <Border Background="#FFCCCC"
+                            BorderBrush="#FF0000"
+                            BorderThickness="1"
+                            Padding="12"
+                            CornerRadius="4"
+                            IsVisible="{Binding CoverageLoss}">
+                        <TextBlock Text="{Binding CoverageLoss}"
+                                   FontSize="14"
+                                   FontWeight="Bold" />
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- CLEAR ALL BUTTON -->
+            <Button Content="Clear All"
+                    Command="{Binding ClearCommand}"
+                    Padding="12,8"
+                    Background="#AAAAAA"
+                    Foreground="White" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

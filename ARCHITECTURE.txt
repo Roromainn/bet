@@ -1,0 +1,322 @@
+===============================================================================
+BETTRACKER ARCHITECTURE - REPOSITORY PATTERN + SERVICE LAYER
+===============================================================================
+
+PROJECT STRUCTURE
+===============================================================================
+
+BetTracker/
+├── BetTracker.Core/                    (Domain Logic + Abstractions)
+│   ├── Models/
+│   │   ├── Bookmaker.cs               (Entity)
+│   │   ├── Offre.cs                   (Bet Entity)
+│   │   ├── Calcul.cs                  (Calculation Entity)
+│   │   ├── Execution.cs               (Execution Entity)
+│   │   ├── MouvementBankroll.cs      (Bankroll Movement Entity)
+│   │   └── Enums.cs                   (TypeOffre, StatutOffre, ResultatMatch, etc)
+│   ├── Services/                      [PHASE 3]
+│   │   ├── IBetCalculationService.cs
+│   │   ├── BetCalculationService.cs
+│   │   └── ServiceCollectionExtensions.cs
+│   ├── Interfaces/
+│   └── BetTracker.Core.csproj
+│
+├── BetTracker.Data/                    (Persistence + Repository Pattern)
+│   ├── BetTrackerContext.cs           (EF Core DbContext)
+│   ├── Migrations/
+│   │   ├── 20260506193736_InitialCreate.cs
+│   │   └── 20260506194114_SeedBookmakers.cs
+│   ├── Repositories/                  [PHASE 3]
+│   │   ├── IRepository.cs             (Generic interface)
+│   │   ├── Repository.cs              (Generic implementation)
+│   │   ├── IBookmakerRepository.cs
+│   │   ├── BookmakerRepository.cs
+│   │   ├── IBetRepository.cs
+│   │   ├── BetRepository.cs
+│   │   └── RepositoryServiceCollectionExtensions.cs
+│   └── BetTracker.Data.csproj
+│
+├── BetTracker.UI/                      (Avalonia MVVM)
+│   ├── Views/
+│   ├── ViewModels/
+│   ├── Controls/
+│   ├── Assets/
+│   └── BetTracker.UI.csproj
+│
+├── BetTracker.Tests/                   (Unit + Integration Tests)
+│   ├── Services/
+│   │   └── BetCalculationServiceTests.cs
+│   ├── DIContainerTests.cs
+│   ├── UsageExample.cs
+│   └── BetTracker.Tests.csproj
+│
+└── BetTracker.sln
+
+
+===============================================================================
+DEPENDENCY INJECTION LAYERS
+===============================================================================
+
+        ┌─────────────────────────────────────┐
+        │      BetTracker.UI (Avalonia)       │
+        │      ViewModels (MVVM)              │
+        └─────────────┬───────────────────────┘
+                      │
+                      ↓ Inject
+        ┌─────────────────────────────────────┐
+        │    BetTracker.Core (Services)       │
+        │   IBetCalculationService            │
+        │   ServiceCollectionExtensions       │
+        └─────────────┬───────────────────────┘
+                      │
+        ┌─────────────┴───────────────────────┐
+        │                                      │
+        ↓ Uses                                ↓ Uses
+┌─────────────────────────────┐   ┌──────────────────────────┐
+│  BetTracker.Data (Data)     │   │  Domain Entities (Core)  │
+│  Repositories               │   │  - Bookmaker             │
+│  - IRepository<T>           │   │  - Offre (Bet)           │
+│  - IBookmakerRepository     │   │  - Calcul                │
+│  - IBetRepository           │   │  - Execution             │
+│                             │   │  - MouvementBankroll     │
+└────────────┬────────────────┘   └──────────────────────────┘
+             │
+             ↓ Uses (DbContext)
+       ┌─────────────────┐
+       │  SQLite DB      │
+       │  BetTracker.db  │
+       └─────────────────┘
+
+
+===============================================================================
+CLASS HIERARCHY
+===============================================================================
+
+REPOSITORIES:
+────────────
+IRepository<T> (Generic Interface)
+    │
+    ├── Repository<T> (Generic Base Implementation)
+    │   ├── BookmakerRepository : IBookmakerRepository
+    │   └── BetRepository : IBetRepository
+    │
+    ├── IBookmakerRepository : IRepository<Bookmaker>
+    │   └── BookmakerRepository
+    │
+    └── IBetRepository : IRepository<Offre>
+        └── BetRepository
+
+
+SERVICES:
+────────
+IBetCalculationService
+    │
+    └── BetCalculationService (Scoped)
+            │
+            └── Methods:
+                - CalculateLayBetEV()
+                - CalculateMatchedBetProfit()
+                - CalculateActualEV()
+                - CalculateCoverageLoss()
+
+
+===============================================================================
+DI CONTAINER REGISTRATION
+===============================================================================
+
+Method 1: Register Core Services
+──────────────────────────────
+services.AddBetTrackerCoreServices();
+    → Registers IBetCalculationService → BetCalculationService (Scoped)
+
+
+Method 2: Register Repositories
+───────────────────────────────
+services.AddBetTrackerRepositories();
+    → Registers IRepository<T> → Repository<T> (Scoped, generic)
+    → Registers IBookmakerRepository → BookmakerRepository (Scoped)
+    → Registers IBetRepository → BetRepository (Scoped)
+
+
+Full Setup in Application Startup:
+──────────────────────────────────
+var services = new ServiceCollection();
+
+// Register DbContext
+services.AddScoped<BetTrackerContext>();
+
+// Register repositories and services
+services.AddBetTrackerRepositories();
+services.AddBetTrackerCoreServices();
+
+// Build service provider
+var provider = services.BuildServiceProvider();
+
+
+===============================================================================
+DATA ACCESS PATTERNS
+===============================================================================
+
+PATTERN 1: Generic CRUD (IRepository<T>)
+─────────────────────────────────────────
+var bookmaker = await repository.GetByIdAsync(id);
+await repository.UpdateAsync(bookmaker);
+await repository.SaveChangesAsync();
+
+
+PATTERN 2: Specialized Queries (Domain Repositories)
+──────────────────────────────────────────────────────
+// Bookmaker queries
+var activeBookmakers = await bookmakerRepo.GetActiveAsync();
+var bookmaker = await bookmakerRepo.GetByNameAsync("Betclic");
+var bookmakerWithOffers = await bookmakerRepo.GetWithOffersAsync(id);
+
+// Bet queries
+var activeBets = await betRepo.GetActiveBetsAsync();
+var bookmakerBets = await betRepo.GetByBookmakerAsync(bookmakerId);
+var betWithCalculations = await betRepo.GetWithCalculsAsync(id);
+var freeBets = await betRepo.GetByTypeAsync(TypeOffre.FreeBet);
+var completedBets = await betRepo.GetCompletedBetsAsync();
+
+
+===============================================================================
+CALCULATION SERVICE FORMULAS
+===============================================================================
+
+LAY BET EV:
+───────────
+Used for arbitrage/lay betting strategies
+
+Formula: EV = back_stake * (back_odds - 1) - lay_stake * lay_odds
+
+Context:
+  - Back bet: Money placed on outcome at first bookmaker
+  - Lay bet: Money placed against outcome at second bookmaker
+  - Positive EV: Profitable opportunity
+  - Negative EV: Loss expected
+
+
+MATCHED BET PROFIT:
+───────────────────
+Used for matched betting (guarantee profit from bonuses)
+
+Formula: Profit = min(stake1 * odds1, stake2 * odds2) - total_stakes
+
+Context:
+  - Betting both sides to guarantee profit
+  - Often used with free bets or bonus requirements
+
+
+COVERAGE LOSS:
+──────────────
+Used to measure imperfect bet matching
+
+Formula: Loss = total_stakes - min(outcome1, outcome2)
+
+Context:
+  - Represents unhedged portion of bets
+  - Should be minimized with proper stake sizing
+
+
+===============================================================================
+ENTITY RELATIONSHIPS
+===============================================================================
+
+Bookmaker (1)──────────(N) Offre (Bet)
+    │                        │
+    │                        ├─(1)──(N) Calcul
+    │                        │           │
+    │                        │           └─(1)──(0..1) Execution
+    │                        │
+    │                        └─(1)──(N) MouvementBankroll
+    │
+    └─(1)──(N) MouvementBankroll
+
+Key Relationships:
+- Bookmaker → Many Offers (one-to-many)
+- Offer → Many Calculations (one-to-many)
+- Calculation → One Execution (one-to-one, optional)
+- Bookmaker → Many Bankroll Movements (cascade delete)
+- Offer → Many Bankroll Movements (cascade delete)
+
+
+===============================================================================
+LIFETIME MANAGEMENT
+===============================================================================
+
+All services and repositories use SCOPED lifetime:
+
+Scoped Lifetime Benefits:
+  ✓ New instance per request/operation
+  ✓ Same DbContext instance within scope
+  ✓ Proper change tracking
+  ✓ Lazy loading support
+  ✓ No memory leaks
+  ✓ Thread-safe with async/await
+
+Usage in Web Context:
+  - One scope per HTTP request
+  - Automatic disposal after request completes
+
+Usage in Desktop Context:
+  - Create scope for each user operation
+  - Dispose scope when operation completes
+
+
+===============================================================================
+TESTING APPROACH
+===============================================================================
+
+Test Categories Implemented:
+
+1. UNIT TESTS (BetCalculationServiceTests.cs)
+   - Service logic tested in isolation
+   - Formula validation
+   - Error handling (exceptions)
+   - Edge cases
+
+2. DI CONTAINER TESTS (DIContainerTests.cs)
+   - Service registration verification
+   - Dependency resolution testing
+   - Interface to implementation mapping
+   - Container configuration validation
+
+3. USAGE EXAMPLES (UsageExample.cs)
+   - Real-world scenarios
+   - Integration patterns
+   - MVVM ViewModel injection
+   - Scoped lifetime demonstration
+
+Total Test Count: 18 tests - ALL PASSING
+
+
+===============================================================================
+NEXT IMPLEMENTATION STEPS
+===============================================================================
+
+Phase 4: UI Integration
+  - Create ViewModels with injected repositories
+  - Implement MVVM binding patterns
+  - Add data loading and error handling
+  - Create Views with Avalonia controls
+
+Phase 5: Business Logic Services
+  - ArbitrageFinder service
+  - ProfitCalculator service
+  - RiskAssessment service
+  - NotificationService for alerts
+
+Phase 6: Advanced Features
+  - Unit of Work pattern (complex transactions)
+  - Caching layer (for expensive queries)
+  - Logging and diagnostics
+  - Event sourcing for audit trail
+
+Phase 7: Deployment
+  - Configuration management
+  - Database migrations automation
+  - Error tracking and monitoring
+  - Performance optimization
+
+
+===============================================================================
