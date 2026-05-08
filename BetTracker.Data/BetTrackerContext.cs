@@ -13,7 +13,14 @@ public class BetTrackerContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite(@"Data Source=BetTracker.db");
+        var dbPath = Path.Combine(
+            Path.GetDirectoryName(typeof(BetTrackerContext).Assembly.Location) ?? "",
+            "..",
+            "..",
+            "BetTracker.db"
+        );
+        var absolutePath = Path.GetFullPath(dbPath);
+        optionsBuilder.UseSqlite($"Data Source={absolutePath}");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
