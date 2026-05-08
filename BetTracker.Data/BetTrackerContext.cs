@@ -17,6 +17,8 @@ public class BetTrackerContext : DbContext
             Path.GetDirectoryName(typeof(BetTrackerContext).Assembly.Location) ?? "",
             "..",
             "..",
+            "..",
+            "..",
             "BetTracker.db"
         );
         var absolutePath = Path.GetFullPath(dbPath);
