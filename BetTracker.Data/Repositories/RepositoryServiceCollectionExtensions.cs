@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using BetTracker.Core.Services;
 
 namespace BetTracker.Data.Repositories;
 
@@ -15,6 +16,7 @@ public static class RepositoryServiceCollectionExtensions
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IBookmakerRepository, BookmakerRepository>();
         services.AddScoped<IBetRepository, BetRepository>();
+        services.AddScoped<IBetOfferRepository, BetRepository>();
 
         return services;
     }

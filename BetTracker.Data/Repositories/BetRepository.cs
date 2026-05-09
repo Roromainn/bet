@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using BetTracker.Core.Models;
+using BetTracker.Core.Services;
 
 namespace BetTracker.Data.Repositories;
 
 /// <summary>
 /// Repository for Offre (Bet) entity with specialized queries.
 /// </summary>
-public class BetRepository : Repository<Offre>, IBetRepository
+public class BetRepository : Repository<Offre>, IBetRepository, IBetOfferRepository
 {
     private readonly BetTrackerContext _context;
 

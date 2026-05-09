@@ -14,6 +14,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IBetCalculationService, BetCalculationService>();
         services.AddScoped<IArbitrageFinderService, ArbitrageFinderService>();
+        services.AddScoped<IProfitCalculatorService, ProfitCalculatorService>();
+        services.AddScoped<IRiskAssessmentService, RiskAssessmentService>();
+        services.AddScoped<INotificationService, NotificationService>();
         return services;
     }
 }
