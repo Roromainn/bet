@@ -1,0 +1,92 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BetTracker.UI.Views.ArbitrageView">
+    <Border Padding="12">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto" RowSpacing="12">
+        <!-- Header with Title -->
+        <TextBlock Grid.Row="0" Text="Arbitrage Opportunities" FontSize="18" FontWeight="Bold" />
+
+        <!-- Threshold Control -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+            <TextBlock Grid.Column="0" Text="Min Profit Threshold (%):" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Column="1"
+                          Value="{Binding MinProfitThreshold}"
+                          Minimum="0"
+                          Maximum="100"
+                          Increment="0.5" />
+            <Button Grid.Column="2"
+                   Content="Find Opportunities"
+                   Command="{Binding FindOpportunitiesCommand}"
+                   IsEnabled="{Binding !IsLoading}"
+                   Padding="12,8" />
+        </Grid>
+
+        <!-- Error Message -->
+        <Border Grid.Row="2"
+                Background="#FFE6E6"
+                BorderBrush="#FF9999"
+                BorderThickness="1"
+                Padding="12"
+                IsVisible="{Binding ErrorMessage}">
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="#CC0000" />
+        </Border>
+
+        <!-- Loading Indicator -->
+        <ProgressBar Grid.Row="3"
+                     IsIndeterminate="True"
+                     IsVisible="{Binding IsLoading}"
+                     Height="4" />
+
+        <!-- Opportunities ListBox -->
+        <ListBox Grid.Row="3"
+                 ItemsSource="{Binding Opportunities}"
+                 SelectedItem="{Binding SelectedOpportunity}"
+                 IsVisible="{Binding !IsLoading}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="#FFFFFF"
+                            BorderBrush="#EEEEEE"
+                            BorderThickness="0,0,0,1"
+                            Padding="12,8">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock Text="{Binding Bookmaker1}"
+                                           FontWeight="Bold"
+                                           FontSize="14" />
+                                <TextBlock Text="{Binding Bookmaker2}"
+                                           FontSize="12"
+                                           Foreground="#666666" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding ProfitDisplay}"
+                                       FontWeight="Bold"
+                                       Foreground="#009900" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Action Buttons -->
+        <Button Grid.Row="4"
+               Content="Send Alert"
+               Command="{Binding SendAlertCommand}"
+               IsEnabled="{Binding SelectedOpportunity, Converter={x:Static ObjectConverters.IsNotNull}}"
+               Padding="12,8"
+               Background="#0066CC"
+               Foreground="White" />
+
+        <!-- Status Bar -->
+        <Border Grid.Row="5"
+                BorderBrush="#CCCCCC"
+                BorderThickness="0,1,0,0"
+                Padding="0,12,0,0">
+            <TextBlock Text="{Binding Opportunities.Count, StringFormat='Total Opportunities: {0}'}"
+                       Foreground="#666666" />
+        </Border>
+        </Grid>
+    </Border>
+</UserControl>

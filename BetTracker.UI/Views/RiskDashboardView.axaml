@@ -1,0 +1,153 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BetTracker.UI.Views.RiskDashboardView">
+    <ScrollViewer Padding="12">
+        <StackPanel Spacing="20">
+            <!-- Title -->
+            <TextBlock Text="Risk Dashboard" FontSize="18" FontWeight="Bold" />
+
+            <!-- Error Message -->
+            <Border Background="#FFE6E6"
+                    BorderBrush="#FF9999"
+                    BorderThickness="1"
+                    Padding="12"
+                    CornerRadius="4"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#CC0000" />
+            </Border>
+
+            <!-- INPUTS SECTION -->
+            <Border Background="#F0F0F0"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    Padding="16"
+                    CornerRadius="4">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Bet Configuration"
+                               FontSize="14"
+                               FontWeight="Bold" />
+
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                        <!-- Back Stake -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Back Stake:" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="0" Grid.Column="1"
+                                      Value="{Binding BackStake}"
+                                      Minimum="0"
+                                      Maximum="100000"
+                                      Increment="1" />
+
+                        <!-- Back Odds -->
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Back Odds:" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="0" Grid.Column="3"
+                                      Value="{Binding BackOdds}"
+                                      Minimum="1"
+                                      Maximum="1000"
+                                      Increment="0.1"
+                                      FormatString="F2" />
+
+                        <!-- Lay Stake -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Lay Stake:" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="1" Grid.Column="1"
+                                      Value="{Binding LayStake}"
+                                      Minimum="0"
+                                      Maximum="100000"
+                                      Increment="1" />
+
+                        <!-- Lay Odds -->
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Lay Odds:" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="1" Grid.Column="3"
+                                      Value="{Binding LayOdds}"
+                                      Minimum="1"
+                                      Maximum="1000"
+                                      Increment="0.1"
+                                      FormatString="F2" />
+                    </Grid>
+
+                    <!-- Action Buttons -->
+                    <StackPanel Spacing="8" Orientation="Horizontal">
+                        <Button Content="Assess Risk"
+                                Command="{Binding AssessCommand}"
+                                Padding="12,8" />
+                        <Button Content="Clear"
+                                Command="{Binding ClearCommand}"
+                                Padding="12,8"
+                                Background="#AAAAAA"
+                                Foreground="White" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- OUTPUTS SECTION -->
+            <Border Background="#F0F0F0"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    Padding="16"
+                    CornerRadius="4">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Risk Assessment Results"
+                               FontSize="14"
+                               FontWeight="Bold" />
+
+                    <!-- Net Profit -->
+                    <Border Background="#CCFFCC"
+                            BorderBrush="#00DD00"
+                            BorderThickness="1"
+                            Padding="12"
+                            CornerRadius="4">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Net Profit:" FontWeight="Bold" />
+                            <TextBlock Text="{Binding NetProfit, StringFormat=0.00}"
+                                       FontSize="16"
+                                       Foreground="#006600" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Liability -->
+                    <Border Background="#FFFFCC"
+                            BorderBrush="#FFDD00"
+                            BorderThickness="1"
+                            Padding="12"
+                            CornerRadius="4">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Liability (Exposure):" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Liability, StringFormat=0.00}"
+                                       FontSize="16"
+                                       Foreground="#996600" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Risk Level -->
+                    <Border Background="#E6F3FF"
+                            BorderBrush="#0099FF"
+                            BorderThickness="1"
+                            Padding="12"
+                            CornerRadius="4">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Risk Level:" FontWeight="Bold" />
+                            <TextBlock Text="{Binding RiskLevelDisplay}"
+                                       FontSize="16"
+                                       Foreground="#0066CC" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Maximum Exposure -->
+                    <Border Background="#FFE6F0"
+                            BorderBrush="#FF0099"
+                            BorderThickness="1"
+                            Padding="12"
+                            CornerRadius="4">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Maximum Safe Exposure (Liability × 1.2):" FontWeight="Bold" />
+                            <TextBlock Text="{Binding MaxExposure, StringFormat=0.00}"
+                                       FontSize="16"
+                                       Foreground="#990066" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -23,5 +23,15 @@
         <TabItem Header="Calculations">
             <local:CalculationView />
         </TabItem>
+
+        <!-- Arbitrage Tab -->
+        <TabItem Header="Arbitrage">
+            <local:ArbitrageView />
+        </TabItem>
+
+        <!-- Risk Dashboard Tab -->
+        <TabItem Header="Risk Dashboard">
+            <local:RiskDashboardView />
+        </TabItem>
     </TabControl>
 </Window>

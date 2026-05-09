@@ -39,6 +39,8 @@ public partial class App : Application
         services.AddTransient<BetsViewModel>();
         services.AddTransient<BookmakerViewModel>();
         services.AddTransient<CalculationViewModel>();
+        services.AddTransient<ArbitrageViewModel>();
+        services.AddTransient<RiskDashboardViewModel>();
 
         // Build the service provider
         ServiceProvider = services.BuildServiceProvider();
