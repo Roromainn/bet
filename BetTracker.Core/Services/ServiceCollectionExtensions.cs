@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBetTrackerCoreServices(this IServiceCollection services)
     {
         services.AddScoped<IBetCalculationService, BetCalculationService>();
+        services.AddScoped<IArbitrageFinderService, ArbitrageFinderService>();
         return services;
     }
 }
