@@ -65,6 +65,42 @@ public partial class CalculationViewModel : ObservableObject
     [ObservableProperty]
     private string? errorMessage;
 
+    [ObservableProperty]
+    private string? backStakeError;
+
+    [ObservableProperty]
+    private string? backOddsError;
+
+    [ObservableProperty]
+    private string? layStakeError;
+
+    [ObservableProperty]
+    private string? layOddsError;
+
+    [ObservableProperty]
+    private string? stake1Error;
+
+    [ObservableProperty]
+    private string? odds1Error;
+
+    [ObservableProperty]
+    private string? stake2Error;
+
+    [ObservableProperty]
+    private string? odds2Error;
+
+    [ObservableProperty]
+    private string? coverageStake1Error;
+
+    [ObservableProperty]
+    private string? coverageOdds1Error;
+
+    [ObservableProperty]
+    private string? coverageStake2Error;
+
+    [ObservableProperty]
+    private string? coverageOdds2Error;
+
     /// <summary>
     /// Constructor with dependency injection.
     /// </summary>
@@ -83,6 +119,13 @@ public partial class CalculationViewModel : ObservableObject
         try
         {
             ErrorMessage = null;
+            ValidateLayBetFields();
+
+            if (BackStakeError != null || BackOddsError != null || LayStakeError != null || LayOddsError != null)
+            {
+                ErrorMessage = BackStakeError ?? BackOddsError ?? LayStakeError ?? LayOddsError;
+                return;
+            }
 
             LayBetEV = _calculationService.CalculateLayBetEV(
                 BackStake,
@@ -110,6 +153,13 @@ public partial class CalculationViewModel : ObservableObject
         try
         {
             ErrorMessage = null;
+            ValidateMatchedBetFields();
+
+            if (Stake1Error != null || Odds1Error != null || Stake2Error != null || Odds2Error != null)
+            {
+                ErrorMessage = Stake1Error ?? Odds1Error ?? Stake2Error ?? Odds2Error;
+                return;
+            }
 
             MatchedBetProfit = _calculationService.CalculateMatchedBetProfit(
                 Stake1,
@@ -137,6 +187,13 @@ public partial class CalculationViewModel : ObservableObject
         try
         {
             ErrorMessage = null;
+            ValidateCoverageFields();
+
+            if (CoverageStake1Error != null || CoverageOdds1Error != null || CoverageStake2Error != null || CoverageOdds2Error != null)
+            {
+                ErrorMessage = CoverageStake1Error ?? CoverageOdds1Error ?? CoverageStake2Error ?? CoverageOdds2Error;
+                return;
+            }
 
             CoverageLoss = _calculationService.CalculateCoverageLoss(
                 CoverageStake1,
@@ -159,7 +216,7 @@ public partial class CalculationViewModel : ObservableObject
     /// Clears all calculations and resets to default values.
     /// </summary>
     [RelayCommand]
-    public void Clear()
+    public void ResetForm()
     {
         BackStake = 100m;
         BackOdds = 3.0m;
@@ -180,5 +237,118 @@ public partial class CalculationViewModel : ObservableObject
         CoverageLoss = 0m;
 
         ErrorMessage = null;
+        ClearErrors();
+    }
+
+    /// <summary>
+    /// Clears all validation error messages.
+    /// </summary>
+    private void ClearErrors()
+    {
+        BackStakeError = null;
+        BackOddsError = null;
+        LayStakeError = null;
+        LayOddsError = null;
+        Stake1Error = null;
+        Odds1Error = null;
+        Stake2Error = null;
+        Odds2Error = null;
+        CoverageStake1Error = null;
+        CoverageOdds1Error = null;
+        CoverageStake2Error = null;
+        CoverageOdds2Error = null;
+    }
+
+    /// <summary>
+    /// Validates lay bet EV calculation fields.
+    /// </summary>
+    private void ValidateLayBetFields()
+    {
+        BackStakeError = null;
+        BackOddsError = null;
+        LayStakeError = null;
+        LayOddsError = null;
+
+        if (BackStake <= 0)
+        {
+            BackStakeError = "Back stake must be a positive number";
+        }
+
+        if (BackOdds <= 0)
+        {
+            BackOddsError = "Back odds must be a positive number";
+        }
+
+        if (LayStake <= 0)
+        {
+            LayStakeError = "Lay stake must be a positive number";
+        }
+
+        if (LayOdds <= 0)
+        {
+            LayOddsError = "Lay odds must be a positive number";
+        }
+    }
+
+    /// <summary>
+    /// Validates matched bet profit calculation fields.
+    /// </summary>
+    private void ValidateMatchedBetFields()
+    {
+        Stake1Error = null;
+        Odds1Error = null;
+        Stake2Error = null;
+        Odds2Error = null;
+
+        if (Stake1 <= 0)
+        {
+            Stake1Error = "Stake 1 must be a positive number";
+        }
+
+        if (Odds1 <= 0)
+        {
+            Odds1Error = "Odds 1 must be a positive number";
+        }
+
+        if (Stake2 <= 0)
+        {
+            Stake2Error = "Stake 2 must be a positive number";
+        }
+
+        if (Odds2 <= 0)
+        {
+            Odds2Error = "Odds 2 must be a positive number";
+        }
+    }
+
+    /// <summary>
+    /// Validates coverage loss calculation fields.
+    /// </summary>
+    private void ValidateCoverageFields()
+    {
+        CoverageStake1Error = null;
+        CoverageOdds1Error = null;
+        CoverageStake2Error = null;
+        CoverageOdds2Error = null;
+
+        if (CoverageStake1 <= 0)
+        {
+            CoverageStake1Error = "Stake 1 must be a positive number";
+        }
+
+        if (CoverageOdds1 <= 0)
+        {
+            CoverageOdds1Error = "Odds 1 must be a positive number";
+        }
+
+        if (CoverageStake2 <= 0)
+        {
+            CoverageStake2Error = "Stake 2 must be a positive number";
+        }
+
+        if (CoverageOdds2 <= 0)
+        {
+            CoverageOdds2Error = "Odds 2 must be a positive number";
+        }
     }
 }

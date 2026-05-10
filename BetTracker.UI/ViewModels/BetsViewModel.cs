@@ -28,6 +28,33 @@ public partial class BetsViewModel : ObservableObject
     [ObservableProperty]
     private string? errorMessage;
 
+    [ObservableProperty]
+    private bool showDeleteConfirm = false;
+
+    [ObservableProperty]
+    private string? confirmationMessage;
+
+    [ObservableProperty]
+    private BetItemViewModel? selectedBetForDelete;
+
+    [ObservableProperty]
+    private decimal newBetOdds = 2.0m;
+
+    [ObservableProperty]
+    private decimal newBetStake = 100m;
+
+    [ObservableProperty]
+    private string newBetType = string.Empty;
+
+    [ObservableProperty]
+    private string? oddsError;
+
+    [ObservableProperty]
+    private string? stakeError;
+
+    [ObservableProperty]
+    private string? betTypeError;
+
     /// <summary>
     /// Constructor with dependency injection.
     /// </summary>
@@ -59,7 +86,7 @@ public partial class BetsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Error loading bets: {ex.Message}";
+            ErrorMessage = "Failed to load bets. Please try again.";
         }
         finally
         {
@@ -68,29 +95,51 @@ public partial class BetsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Deletes a bet by ID.
+    /// Shows a confirmation dialog before deleting a bet.
     /// </summary>
     [RelayCommand]
-    public async Task DeleteBet(int betId)
+    public void ConfirmDelete(BetItemViewModel bet)
+    {
+        SelectedBetForDelete = bet;
+        ConfirmationMessage = $"Delete bet #{bet.Bet.Id}? This cannot be undone.";
+        ShowDeleteConfirm = true;
+    }
+
+    /// <summary>
+    /// Cancels the delete operation and hides the confirmation dialog.
+    /// </summary>
+    [RelayCommand]
+    public void CancelDelete()
+    {
+        ShowDeleteConfirm = false;
+        SelectedBetForDelete = null;
+        ConfirmationMessage = null;
+    }
+
+    /// <summary>
+    /// Executes the delete operation after confirmation.
+    /// </summary>
+    [RelayCommand]
+    public async Task ExecuteDelete()
     {
         try
         {
-            IsLoading = true;
-            ErrorMessage = null;
-
-            await _betRepository.DeleteAsync(betId);
-            await _betRepository.SaveChangesAsync();
-
-            // Remove from local collection
-            var itemToRemove = Bets.FirstOrDefault(b => b.Bet.Id == betId);
-            if (itemToRemove != null)
+            if (SelectedBetForDelete is not null)
             {
-                Bets.Remove(itemToRemove);
+                IsLoading = true;
+                ErrorMessage = null;
+
+                await _betRepository.DeleteAsync(SelectedBetForDelete.Bet.Id);
+                await _betRepository.SaveChangesAsync();
+
+                Bets.Remove(SelectedBetForDelete);
+                SelectedBetForDelete = null;
             }
+            ShowDeleteConfirm = false;
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Error deleting bet: {ex.Message}";
+            ErrorMessage = "Failed to delete bet. Please try again.";
         }
         finally
         {
@@ -105,5 +154,71 @@ public partial class BetsViewModel : ObservableObject
     public void ClearError()
     {
         ErrorMessage = null;
+    }
+
+    /// <summary>
+    /// Clears all filters and reloads all bets.
+    /// </summary>
+    [RelayCommand]
+    public async Task ClearFilters()
+    {
+        IsLoading = true;
+        ErrorMessage = null;
+        try
+        {
+            Bets.Clear();
+            await LoadBets();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Failed to reload bets. Please try again.";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Validates the bet input fields.
+    /// </summary>
+    private void ValidateFields()
+    {
+        OddsError = null;
+        StakeError = null;
+        BetTypeError = null;
+
+        if (NewBetOdds <= 0)
+        {
+            OddsError = "Odds must be a positive number";
+        }
+
+        if (NewBetStake <= 0)
+        {
+            StakeError = "Stake must be a positive number";
+        }
+
+        if (string.IsNullOrWhiteSpace(NewBetType))
+        {
+            BetTypeError = "Bet type is required";
+        }
+    }
+
+    /// <summary>
+    /// Places a new bet.
+    /// </summary>
+    [RelayCommand]
+    public void PlaceBet()
+    {
+        ErrorMessage = null;
+        ValidateFields();
+
+        if (OddsError != null || StakeError != null || BetTypeError != null)
+        {
+            return;
+        }
+
+        // Placeholder for actual bet placement logic
+        ErrorMessage = "Bet placement feature is under development.";
     }
 }

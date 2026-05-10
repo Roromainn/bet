@@ -16,25 +16,48 @@
                 BorderThickness="1"
                 Padding="12"
                 CornerRadius="4">
-            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
-                <TextBox Grid.Column="0"
-                         PlaceholderText="Bookmaker Name"
-                         Text="{Binding NewBookmakerName}" />
-                <TextBox Grid.Column="1"
-                         PlaceholderText="Logo URL"
-                         Text="{Binding NewBookmakerLogoUrl}"
-                         Width="200" />
-                <Button Grid.Column="2"
-                        Content="Add Bookmaker"
-                        Command="{Binding AddBookmakerCommand}"
-                        IsEnabled="{Binding !IsLoading}"
-                        Padding="12,8" />
-                <Button Grid.Column="3"
-                        Content="Load"
-                        Command="{Binding LoadBookmakersCommand}"
-                        IsEnabled="{Binding !IsLoading}"
-                        Padding="12,8" />
-            </Grid>
+            <StackPanel Spacing="8">
+                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+                    <TextBox Grid.Column="0"
+                             PlaceholderText="Bookmaker Name"
+                             Text="{Binding NewBookmakerName}"
+                             ToolTip.Tip="Enter the bookmaker name (e.g., Bet365, DraftKings)" />
+                    <TextBox Grid.Column="1"
+                             PlaceholderText="Logo URL"
+                             Text="{Binding NewBookmakerLogoUrl}"
+                             Width="200"
+                             ToolTip.Tip="URL to the bookmaker's logo image" />
+                    <Button Grid.Column="2"
+                            Content="Add Bookmaker"
+                            Command="{Binding AddBookmakerCommand}"
+                            IsEnabled="{Binding !IsLoading}"
+                            Padding="12,8" />
+                    <Button Grid.Column="3"
+                            Content="Clear"
+                            Command="{Binding ClearFiltersCommand}"
+                            IsEnabled="{Binding !IsLoading}"
+                            Padding="8,4"
+                            Background="#AAAAAA"
+                            Foreground="White" />
+                    <Button Grid.Column="4"
+                            Content="Load"
+                            Command="{Binding LoadBookmakersCommand}"
+                            IsEnabled="{Binding !IsLoading}"
+                            Padding="12,8" />
+                </Grid>
+
+                <!-- Name Error -->
+                <TextBlock Text="{Binding NameError}"
+                           Foreground="#CC0000"
+                           FontSize="12"
+                           IsVisible="{Binding NameError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                <!-- Logo URL Error -->
+                <TextBlock Text="{Binding LogoUrlError}"
+                           Foreground="#CC0000"
+                           FontSize="12"
+                           IsVisible="{Binding LogoUrlError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
         </Border>
 
         <!-- Error Message -->
@@ -84,8 +107,8 @@
                             </StackPanel>
                             <Button Grid.Column="2"
                                     Content="Delete"
-                                    Command="{Binding $parent[ListBox].DataContext.DeleteBookmakerCommand}"
-                                    CommandParameter="{Binding Bookmaker.Id}"
+                                    Command="{Binding $parent[ListBox].DataContext.ConfirmDeleteCommand}"
+                                    CommandParameter="{Binding .}"
                                     Padding="8,4"
                                     Background="#FF6666"
                                     Foreground="White" />
@@ -94,6 +117,30 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <!-- Confirmation Dialog -->
+        <Border Grid.Row="2"
+                Background="#FFE6E6"
+                Padding="16"
+                IsVisible="{Binding ShowDeleteConfirm}"
+                BorderBrush="#FF8B0000"
+                BorderThickness="1"
+                CornerRadius="4"
+                Margin="0,8,0,0">
+            <StackPanel Spacing="8">
+                <TextBlock Text="{Binding ConfirmationMessage}" FontWeight="Bold" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="Delete"
+                            Command="{Binding ExecuteDeleteCommand}"
+                            Background="Red"
+                            Foreground="White"
+                            Padding="8,4" />
+                    <Button Content="Cancel"
+                            Command="{Binding CancelDeleteCommand}"
+                            Padding="8,4" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
 
         <!-- Status Bar -->
         <Border Grid.Row="3"

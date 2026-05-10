@@ -32,6 +32,21 @@ public partial class BookmakerViewModel : ObservableObject
     [ObservableProperty]
     private string newBookmakerLogoUrl = string.Empty;
 
+    [ObservableProperty]
+    private bool showDeleteConfirm = false;
+
+    [ObservableProperty]
+    private string? confirmationMessage;
+
+    [ObservableProperty]
+    private BookmakerItemViewModel? selectedBookmakerForDelete;
+
+    [ObservableProperty]
+    private string? nameError;
+
+    [ObservableProperty]
+    private string? logoUrlError;
+
     /// <summary>
     /// Constructor with dependency injection.
     /// </summary>
@@ -60,7 +75,7 @@ public partial class BookmakerViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Error loading bookmakers: {ex.Message}";
+            ErrorMessage = "Failed to load bookmakers. Please try again.";
         }
         finally
         {
@@ -76,14 +91,15 @@ public partial class BookmakerViewModel : ObservableObject
     {
         try
         {
-            IsLoading = true;
             ErrorMessage = null;
+            ValidateFields();
 
-            if (string.IsNullOrWhiteSpace(NewBookmakerName))
+            if (NameError != null || LogoUrlError != null)
             {
-                ErrorMessage = "Bookmaker name is required";
                 return;
             }
+
+            IsLoading = true;
 
             var newBookmaker = new Bookmaker
             {
@@ -105,7 +121,7 @@ public partial class BookmakerViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Error adding bookmaker: {ex.Message}";
+            ErrorMessage = "Failed to add bookmaker. Please check your input and try again.";
         }
         finally
         {
@@ -114,29 +130,51 @@ public partial class BookmakerViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Deletes a bookmaker by ID.
+    /// Shows a confirmation dialog before deleting a bookmaker.
     /// </summary>
     [RelayCommand]
-    public async Task DeleteBookmaker(int bookmakerId)
+    public void ConfirmDelete(BookmakerItemViewModel bookmaker)
+    {
+        SelectedBookmakerForDelete = bookmaker;
+        ConfirmationMessage = $"Delete bookmaker '{bookmaker.Name}'? This cannot be undone.";
+        ShowDeleteConfirm = true;
+    }
+
+    /// <summary>
+    /// Cancels the delete operation and hides the confirmation dialog.
+    /// </summary>
+    [RelayCommand]
+    public void CancelDelete()
+    {
+        ShowDeleteConfirm = false;
+        SelectedBookmakerForDelete = null;
+        ConfirmationMessage = null;
+    }
+
+    /// <summary>
+    /// Executes the delete operation after confirmation.
+    /// </summary>
+    [RelayCommand]
+    public async Task ExecuteDelete()
     {
         try
         {
-            IsLoading = true;
-            ErrorMessage = null;
-
-            await _bookmakerRepository.DeleteAsync(bookmakerId);
-            await _bookmakerRepository.SaveChangesAsync();
-
-            // Remove from local collection
-            var itemToRemove = Bookmakers.FirstOrDefault(b => b.Bookmaker.Id == bookmakerId);
-            if (itemToRemove != null)
+            if (SelectedBookmakerForDelete is not null)
             {
-                Bookmakers.Remove(itemToRemove);
+                IsLoading = true;
+                ErrorMessage = null;
+
+                await _bookmakerRepository.DeleteAsync(SelectedBookmakerForDelete.Bookmaker.Id);
+                await _bookmakerRepository.SaveChangesAsync();
+
+                Bookmakers.Remove(SelectedBookmakerForDelete);
+                SelectedBookmakerForDelete = null;
             }
+            ShowDeleteConfirm = false;
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Error deleting bookmaker: {ex.Message}";
+            ErrorMessage = "Failed to delete bookmaker. Please try again.";
         }
         finally
         {
@@ -151,5 +189,52 @@ public partial class BookmakerViewModel : ObservableObject
     public void ClearError()
     {
         ErrorMessage = null;
+    }
+
+    /// <summary>
+    /// Clears all filters and input fields, then reloads all bookmakers.
+    /// </summary>
+    [RelayCommand]
+    public async Task ClearFilters()
+    {
+        IsLoading = true;
+        ErrorMessage = null;
+        try
+        {
+            Bookmakers.Clear();
+            NewBookmakerName = string.Empty;
+            NewBookmakerLogoUrl = string.Empty;
+            await LoadBookmakers();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Failed to reload bookmakers. Please try again.";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Validates the bookmaker input fields.
+    /// </summary>
+    private void ValidateFields()
+    {
+        NameError = null;
+        LogoUrlError = null;
+
+        if (string.IsNullOrWhiteSpace(NewBookmakerName))
+        {
+            NameError = "Bookmaker name is required";
+        }
+
+        if (!string.IsNullOrWhiteSpace(NewBookmakerLogoUrl))
+        {
+            if (!Uri.TryCreate(NewBookmakerLogoUrl.Trim(), UriKind.Absolute, out _))
+            {
+                LogoUrlError = "Logo URL must be a valid URL";
+            }
+        }
     }
 }

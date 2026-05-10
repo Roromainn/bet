@@ -48,6 +48,30 @@
                         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding LayOdds}" />
                     </Grid>
 
+                    <!-- Back Stake Error -->
+                    <TextBlock Text="{Binding BackStakeError}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding BackStakeError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Back Odds Error -->
+                    <TextBlock Text="{Binding BackOddsError}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding BackOddsError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Lay Stake Error -->
+                    <TextBlock Text="{Binding LayStakeError}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding LayStakeError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Lay Odds Error -->
+                    <TextBlock Text="{Binding LayOddsError}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding LayOddsError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
                     <Button Content="Calculate Lay EV"
                             Command="{Binding CalculateLayBetEVCommand}"
                             Padding="12,8" />
@@ -93,6 +117,30 @@
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="Odds 2:" />
                         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding Odds2}" />
                     </Grid>
+
+                    <!-- Stake 1 Error -->
+                    <TextBlock Text="{Binding Stake1Error}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding Stake1Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Odds 1 Error -->
+                    <TextBlock Text="{Binding Odds1Error}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding Odds1Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Stake 2 Error -->
+                    <TextBlock Text="{Binding Stake2Error}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding Stake2Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Odds 2 Error -->
+                    <TextBlock Text="{Binding Odds2Error}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding Odds2Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
                     <Button Content="Calculate Matched Profit"
                             Command="{Binding CalculateMatchedBetProfitCommand}"
@@ -140,6 +188,30 @@
                         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding CoverageOdds2}" />
                     </Grid>
 
+                    <!-- Coverage Stake 1 Error -->
+                    <TextBlock Text="{Binding CoverageStake1Error}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding CoverageStake1Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Coverage Odds 1 Error -->
+                    <TextBlock Text="{Binding CoverageOdds1Error}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding CoverageOdds1Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Coverage Stake 2 Error -->
+                    <TextBlock Text="{Binding CoverageStake2Error}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding CoverageStake2Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Coverage Odds 2 Error -->
+                    <TextBlock Text="{Binding CoverageOdds2Error}"
+                               Foreground="#CC0000"
+                               FontSize="12"
+                               IsVisible="{Binding CoverageOdds2Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
                     <Button Content="Calculate Coverage Loss"
                             Command="{Binding CalculateCoverageLossCommand}"
                             Padding="12,8" />
@@ -157,9 +229,9 @@
                 </StackPanel>
             </Border>
 
-            <!-- CLEAR ALL BUTTON -->
-            <Button Content="Clear All"
-                    Command="{Binding ClearCommand}"
+            <!-- RESET FORM BUTTON -->
+            <Button Content="Reset Form"
+                    Command="{Binding ResetFormCommand}"
                     Padding="12,8"
                     Background="#AAAAAA"
                     Foreground="White" />

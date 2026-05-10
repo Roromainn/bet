@@ -59,7 +59,7 @@ public class BetCalculationViewModelTests
 
         // Assert
         Assert.NotNull(_viewModel.ErrorMessage);
-        Assert.Contains("Calculation error", _viewModel.ErrorMessage);
+        Assert.Contains("positive number", _viewModel.ErrorMessage);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class BetCalculationViewModelTests
     }
 
     [Fact]
-    public void Clear_ResetsAllProperties()
+    public void ResetForm_ResetsAllProperties()
     {
         // Arrange
         _viewModel.BackStake = 200m;
@@ -115,7 +115,7 @@ public class BetCalculationViewModelTests
         _viewModel.ErrorMessage = "Some error";
 
         // Act
-        _viewModel.ClearCommand.Execute(null);
+        _viewModel.ResetFormCommand.Execute(null);
 
         // Assert
         Assert.Equal(100m, _viewModel.BackStake);
